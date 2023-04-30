@@ -5,8 +5,10 @@ import * as S from './styles'
 export const DefaultLayout = () => {
   return (
     <S.LayoutContainer>
-      <Header />
-      <Outlet />
+      <S.Content>
+        <Header />
+        <Outlet />
+      </S.Content>
     </S.LayoutContainer>
   )
 }

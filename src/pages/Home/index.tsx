@@ -1,48 +1,74 @@
-import { Play } from 'phosphor-react'
+import { HandPalm, Play } from 'phosphor-react'
+import { useCycle } from '../../hooks/useCycle'
+import { useForm, FormProvider } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as zod from 'zod'
+
+import { NewCycleForm, Countdown } from './components'
 
 import * as S from './styles'
 
+const newCycleFormValidationSchema = zod.object({
+  task: zod.string().min(1, 'Informe a tarefa'),
+  minutesAmount: zod
+    .number()
+    .min(10, 'O ciclo precisa ser de no mínimo 5 minutos.')
+    .max(60, 'O ciclo precisa ser de no máximo 60 minutos.'),
+})
+
+type NewCycleFormData = zod.infer<typeof newCycleFormValidationSchema>
+
+export interface Cycle {
+  id: string
+  task: string
+  minutesAmount: number
+  startDate: Date
+  interruptedDate?: Date
+  finishedDate?: Date
+}
+
 export const Home = () => {
+  const { activeCycle, createNewCycle, interruptCurrentCycles } = useCycle()
+
+  const newCycleForm = useForm<NewCycleFormData>({
+    resolver: zodResolver(newCycleFormValidationSchema),
+    defaultValues: {
+      task: '',
+      minutesAmount: 0,
+    },
+  })
+
+  const { watch, handleSubmit, reset } = newCycleForm
+
+  const task = watch('task')
+  const isSubmitDisabled = !task
+
+  const handleCreateNewCycle = (data: NewCycleFormData) => {
+    createNewCycle(data)
+
+    reset()
+  }
+
   return (
     <S.HomeContainer>
-      <S.Form action="">
-        <S.FormContainer>
-          <label htmlFor="task">Vou trabalhar em</label>
-          <S.TaskInput
-            type="text"
-            id="task"
-            placeholder="Dê um nome para seu projeto"
-            list="task-suggestions"
-          />
-          <datalist id="task-suggestions">
-            <option value="projeto 1" />
-            <option value="projeto 2" />
-            <option value="projeto 3" />
-            <option value="projeto 4" />
-          </datalist>
-          <label htmlFor="minutesAmount">durante</label>
-          <S.MinutesAmountInput
-            type="number"
-            id="minutesAmount"
-            step={10}
-            min={0}
-            max={60}
-            placeholder="00"
-          />
-          <span>minutos.</span>
-        </S.FormContainer>
+      <S.Form onSubmit={handleSubmit(handleCreateNewCycle)}>
+        <FormProvider {...newCycleForm}>
+          <NewCycleForm />
+        </FormProvider>
 
-        <S.CountdownContainer>
-          <span>0</span>
-          <span>0</span>
-          <S.Separator>: </S.Separator>
-          <span>0</span>
-          <span>0</span>
-        </S.CountdownContainer>
-        <S.StartCountdownButton type="submit">
-          <Play size={24} />
-          Começar
-        </S.StartCountdownButton>
+        <Countdown />
+
+        {activeCycle ? (
+          <S.StopCountdownButton type="button" onClick={interruptCurrentCycles}>
+            <HandPalm size={24} />
+            Interromper
+          </S.StopCountdownButton>
+        ) : (
+          <S.StartCountdownButton disabled={isSubmitDisabled} type="submit">
+            <Play size={24} />
+            Começar
+          </S.StartCountdownButton>
+        )}
       </S.Form>
     </S.HomeContainer>
   )

@@ -6,10 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "test": "jest --watchAll --verbose",
+    "test:watch": "jest --watchAll --verbose",
     "coverage": "jest --coverage",
     "preview": "vite preview",
-    "lint": "eslint src --ext .ts,.tsx"
+    "lint": "eslint src --ext .ts,.tsx",
+    "test:ci": "jest --runInBand",
+    "typecheck": "tsc --project tsconfig.json --noEmit"
   },
   "dependencies": {
     "@babel/preset-typescript": "^7.21.4",

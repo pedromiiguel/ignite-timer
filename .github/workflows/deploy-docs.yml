@@ -18,13 +18,13 @@ jobs:
           node-version: 16
 
       - name: Install dependencies
-        run: pnpm install 
+        run: npm install 
 
       - name: Linting
-        run: pnpm lint
+        run: npm lint
 
       - name: Typecheck
-        run: pnpm typecheck
-        
+        run: npm typecheck
+
       - name: Test
-        run: pnpm test:ci
+        run: npm test:ci

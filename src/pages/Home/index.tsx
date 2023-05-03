@@ -52,6 +52,7 @@ export const Home = () => {
   return (
     <S.HomeContainer>
       <S.Form onSubmit={handleSubmit(handleCreateNewCycle)}>
+        <p>teste ci/cd deploy</p>
         <FormProvider {...newCycleForm}>
           <NewCycleForm />
         </FormProvider>
